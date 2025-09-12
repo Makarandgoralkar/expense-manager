@@ -57,8 +57,6 @@ public class Expense {
     public LocalDate getDate() {
         return date;
     }
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+    public void setDate(LocalDate date) { this.date = date; }
 
 }
