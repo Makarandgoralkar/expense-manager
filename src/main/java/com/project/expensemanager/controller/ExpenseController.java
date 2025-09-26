@@ -1,5 +1,6 @@
 package com.project.expensemanager.controller;
 
+import com.project.expensemanager.dto.CategoryExpenseDTO;
 import com.project.expensemanager.entity.Expense;
 import com.project.expensemanager.service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,12 @@ public class ExpenseController {
     @GetMapping("/search")
     public List<Expense> searchExpensesByTitle(@RequestParam String keyword) {
         return expenseService.searchExpensesByTitle(keyword);
+    }
+
+    @GetMapping("/daily-percentage/{date}")
+    public List<CategoryExpenseDTO> getDailyCategoryWisePercentage(@PathVariable String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return expenseService.getDailyCategoryWisePercentage(localDate);
     }
 }
 

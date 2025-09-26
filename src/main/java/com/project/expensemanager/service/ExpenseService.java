@@ -2,12 +2,15 @@ package com.project.expensemanager.service;
 
 import com.project.expensemanager.entity.Expense;
 import com.project.expensemanager.repository.ExpenseRepository;
+import com.project.expensemanager.dto.CategoryExpenseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseService {
@@ -76,5 +79,26 @@ public class ExpenseService {
     // ✅ Search by Title
     public List<Expense> searchExpensesByTitle(String keyword) {
         return expenseRepository.findByTitleContainingIgnoreCase(keyword);
+    }
+
+    public List<CategoryExpenseDTO> getDailyCategoryWisePercentage(LocalDate date) {
+        List<Expense> expenses = expenseRepository.findByDate(date);
+
+        double total = expenses.stream().mapToDouble(Expense::getAmount).sum();
+
+        if (total == 0) return Collections.emptyList();
+
+        Map<String, Double> categoryTotals = expenses.stream()
+                .collect(Collectors.groupingBy(
+                        Expense::getCategory,
+                        Collectors.summingDouble(Expense::getAmount)
+                ));
+
+        return categoryTotals.entrySet().stream()
+                .map(entry -> new CategoryExpenseDTO(
+                        entry.getKey(),
+                        (entry.getValue() / total) * 100
+                ))
+                .collect(Collectors.toList());
     }
 }
